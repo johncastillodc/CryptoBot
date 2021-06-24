@@ -3,9 +3,14 @@
 ## Requistos:
 Instalar o pacote Price-Indices no ambiente do python (pasta de Libs)
 Comandos:
-> git clone https://github.com/dc-aichara/Price-Indices.git
-> cd Price-Indices
-> python setup.py install
+- git clone https://github.com/dc-aichara/Price-Indices.git
+- cd Price-Indices
+- python setup.py install
+
+## Como Executar:
+1. Editar a configuraçoes
+2. Rodar o arquivo controller usando o comando >>Python Controller.py
+3. Comparar o lucro de Buy and HOLD com o lucro utilizando o robô
 
 ## Objetivo: 
 Robô de investimentos de longo prazo no mercado de ativos digitais
