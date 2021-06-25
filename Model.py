@@ -11,54 +11,54 @@ class Model:
         self.model = self.buildModel(x_train)
         
     def crossover_curto(self,df_ema):
-        df_ema['Anter_curto'] = df_ema['EMA_9'].shift(1) - df_ema['EMA_21'].shift(1)
-        df_ema['Atual_curto'] = df_ema['EMA_9'] - df_ema['EMA_21']
+        df_ema['Anter_curto'] = df_ema['EMA_18'].shift(1) - df_ema['EMA_36'].shift(1)
+        df_ema['Atual_curto'] = df_ema['EMA_18'] - df_ema['EMA_36']
         
         df_ema.loc[(df_ema['Anter_curto'] < 0) & (df_ema['Atual_curto'] > 0), 'Compra_curto'] = df_ema['price']
         df_ema.loc[(df_ema['Anter_curto'] > 0) & (df_ema['Atual_curto'] < 0), 'Venda_curto'] = df_ema['price']
 
-        columns = ['date', 'price','EMA_9', 'EMA_21', 'Compra_curto', 'Venda_curto']
+        columns = ['date', 'price','EMA_18', 'EMA_36', 'Compra_curto', 'Venda_curto']
         print("\n>> EMA-9 and EMA-21 processed: \n"+str(df_ema[columns]))
         return df_ema[columns]
 
     
     def crossover_longo(self,df_ema):
-        distance = ( ( df_ema['price'] - df_ema['EMA_200'] )/df_ema['price'] )* 100
+        distance = ( ( df_ema['price'] - df_ema['EMA_140'] )/df_ema['price'] )* 100
 
-        df_ema.loc[distance > LONG_SELL_CPT , 'Venda_longo'] = df_ema['price']
-        df_ema.loc[distance < -LONG_BUY_CPT, 'Compra_longo'] = df_ema['price']
+        df_ema.loc[distance >= BEAR_TREND_LIMIT , 'Bull_longo'] = distance
+        df_ema.loc[distance < BEAR_TREND_LIMIT, 'Bear_longo'] = distance
 
-        columns = ['date', 'price', 'EMA_200', 'Compra_longo', 'Venda_longo']
+        columns = ['date', 'price', 'EMA_140', 'Bull_longo', 'Bear_longo']
 
         return df_ema[columns]
 
 
     def buildModel(self,x_train):
         indices = Indices(df=x_train)
-        df_ema_curto = indices.get_exponential_moving_average(periods=[9,21])
+        df_ema_curto = indices.get_exponential_moving_average(periods=[18,36])
         output_df_curto = self.crossover_curto(df_ema_curto)
         output_df_curto.set_index('date', inplace=True)
         #print("BuildModel - output_df_curto: "+str(output_df_curto.head()))
-        df_ema_longo = indices.get_exponential_moving_average(periods=[21,200])
+        df_ema_longo = indices.get_exponential_moving_average(periods=[140,200])
         output_df_longo = self.crossover_longo(df_ema_longo)
         output_df_longo.set_index('date', inplace=True)
 
-        df_ema_curto['EMA_200'] = df_ema_longo['EMA_200']
+        df_ema_curto['EMA_140'] = df_ema_longo['EMA_140']
         return output_df_curto,output_df_longo
     
     def trainModel(self,ds):   
         indices = Indices(df=ds)
-        df_curto = indices.get_exponential_moving_average(periods=[9,21])
+        df_curto = indices.get_exponential_moving_average(periods=[18,36])
         df_curto = self.crossover_curto(df_curto)
         df_curto.set_index('date', inplace=True)
         # print("TrainModel - df: "+str(df.head()))
-        df_longo = indices.get_exponential_moving_average(periods=[21,200])
+        df_longo = indices.get_exponential_moving_average(periods=[140,200])
         df_longo = self.crossover_longo(df_longo)
         df_longo.set_index('date', inplace=True)
 
-        df_curto['EMA_200'] = df_longo['EMA_200']
-        df_curto['BUY_TREND'] = df_longo['Compra_longo']
-        df_curto['SELL_TREND'] = df_longo['Venda_longo']
+        df_curto['EMA_140'] = df_longo['EMA_140']
+        df_curto['BEAR_TREND'] = df_longo['Bear_longo']
+        df_curto['BULL_TREND'] = df_longo['Bull_longo']
         dfmerged = df_curto
         return dfmerged
 
@@ -74,9 +74,9 @@ class Model:
 
     def predict_long(self,longo_compra, longo_vende):
         if (np.isnan(longo_compra) == False):
-            long_prediction = 'BUY Trend'
+            long_prediction = 'Bear Trend'
         elif (np.isnan(longo_vende) == False):
-            long_prediction = 'SELL Trend'
+            long_prediction = 'Bull Trend'
         else:
             long_prediction = 'HODL'
 

@@ -49,8 +49,8 @@ Amostra de teste: Um ano escolhido no arquivo Config.py TESTING_YEARS. e.g. 2021
 
 ## Técnicas de análise dos dados: 
 Series Temporais com análise de das medias moveis exponenciais
-Estrategia de curto prazo: Cruzamento de EMA21 vs EMA9
-EStrategia de longo prazo: Distancia ate o suporte de EMA200
+Estrategia de curto prazo: Cruzamento de EMA18 vs EMA36
+Estrategia de longo prazo: Distancia porcentual ate o suporte de EMA140
 
 "The EMA is a moving average that places a greater weight and significance on the most recent data points.
 Like all moving averages, this technical indicator is used to produce buy and sell signals based on crossovers and divergences from the historical average"

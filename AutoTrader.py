@@ -31,6 +31,7 @@ class AutoTrader:
 
     def sell(self):
         if self.account.btc_balance - self.trade_amount >= 0:
+           # if self.account.btc_price > self.account.bought_btc_at: # Is it profitable?
             print(">> SELLING $",self.trade_amount," WORTH OF ***"+COIN+ "***")
             self.account.btc_amount -= (self.trade_amount / self.account.btc_price)
             self.account.usd_balance += self.trade_amount
@@ -46,7 +47,7 @@ class AutoTrader:
         
         sample = self.advisor.trainModel(samples)
 
-        print("\n\n >> SHORT strategy based on EMA 21-9 crossover...")
+        print("\n\n >> SHORT strategy based on EMA 18-36 crossover...")
         
         extract_curto_compra = sample[sample['Compra_curto'].isnull()==False]
         print("\n\n>>SHORT Buy dates: \n: "+str(extract_curto_compra))
@@ -56,13 +57,13 @@ class AutoTrader:
         print("\n>>SHORT Sell dates: \n: "+str(extract_curto_venda))
         time.sleep(TIMING*2) 
 
-        print("\n\n >> LONG TREND strategy based on EMA 200 support ...")
+        print("\n\n >> LONG TREND strategy based on EMA140 support ...")
 
-        extract_longo_compra = sample[sample['BUY_TREND'].isnull()==False]
+        extract_longo_compra = sample[sample['BEAR_TREND'].isnull()==False]
         print("\n\n>>LONG Buy dates: \n: "+str(extract_longo_compra))
         time.sleep(TIMING*2) 
 
-        extract_longo_venda = sample[sample['SELL_TREND'].isnull()==False] 
+        extract_longo_venda = sample[sample['BULL_TREND'].isnull()==False] 
         print("\n>>LONG Sell dates: \n: "+str(extract_longo_venda))
         time.sleep(TIMING*2) 
 
@@ -70,24 +71,14 @@ class AutoTrader:
         
         print("\n\n  *********************************************************************************************")
         print("  *                 Account Balance: $", (self.account.usd_balance + self.account.btc_balance), " BTC: $",
-                  self.account.btc_balance, " USD: $", self.account.usd_balance, "                           *")
+                  self.account.btc_balance, " USD: $", self.account.usd_balance, "                        *")
         print("  *********************************************************************************************")
 
         day_count = 0
 
         for i in sample.iterrows():
             #print("The index is: \n"+str(i))
-            day_count += 1
-            short_prediction = self.advisor.predict_short(i[1].Compra_curto, i[1].Venda_curto)
-            #print(str(i[0]) +" - "+short_prediction)
-            
-            
-            long_prediction = self.advisor.predict_long(i[1].BUY_TREND, i[1].SELL_TREND)
-
-            if (long_prediction != 'HODL'):
-                print("\n"+str(i[0]) +" - "+long_prediction)
-            else:
-                sys.stdout.write('.')
+            day_count += 1            
 
             time.sleep(TIMING/12)
             btc_price = i[1].price
@@ -107,30 +98,45 @@ class AutoTrader:
             if (i[0] == allyesterday or i[0] == str(TESTING_YEARS)+"-12-31"):
                 self.end_btc_price = i[1].price
 
-            if (short_prediction != 'HODL' or long_prediction != 'HODL'):
+            
+            
+            short_prediction = self.advisor.predict_short(i[1].Compra_curto, i[1].Venda_curto)
+            #print(str(i[0]) +" - "+short_prediction)
+                        
+            long_prediction = self.advisor.predict_long(i[1].BEAR_TREND, i[1].BULL_TREND)
+
+            if (long_prediction == "Bull Trend" and  short_prediction == 'BUY' ) or (long_prediction == "Bull Trend" and  short_prediction == 'SELL' ) or (long_prediction == "Bear Trend" and  short_prediction == 'SELL' ):
                 print("\n\n##########################################   DAY ",day_count,"   #########################################")
+                print("\n"+str(i[0]) +" - "+long_prediction)
                 print(str(i[0]) +" - "+short_prediction)
                 print("The Price is: "+str(i[1].price))
                 time.sleep(TIMING)
-
+            else:
+                sys.stdout.write('.')
 
             if self.account.btc_price != 0:
                 self.account.btc_balance = self.account.btc_amount * btc_price
             self.account.btc_price = btc_price
-            if short_prediction == 'BUY' or long_prediction == "BUY Trend":
-                self.buy()
-            if short_prediction == 'SELL' or long_prediction == "SELL Trend":
+
+            if (long_prediction == "Bull Trend"):
+                if short_prediction == 'BUY' :
+                    self.buy()
+                if short_prediction == 'SELL':
+                    self.sell()
+            
+            if (long_prediction == "Bear Trend"):
                 self.sell()
+
             self.account.btc_balance = self.account.btc_amount * btc_price
             #time.sleep(TIMING/12)  # Only for Visual Purposes
         
-            if (short_prediction != 'HODL' or long_prediction != 'HODL'):
+            if (long_prediction != 'HODL' and short_prediction != 'HODL'):
                 print("    ********************************************************************************************   ")
                 print("#           Account Balance: $", (self.account.usd_balance + self.account.btc_balance), " BTC: $",
               self.account.btc_balance, " USD: $", self.account.usd_balance, "")
                 print("#################################################################################################\n\n")  
 
-        profit = ((self.account.usd_balance + self.account.btc_balance - 2000) / (2000) ) *100
+        profit = ((self.account.usd_balance + self.account.btc_balance - 1000) / (1000) ) *100
         holdprofit = ((self.end_btc_price - self.start_btc_price)/self.start_btc_price) *100
 
         print("\n*****************************************   TOTAL   *********************************************")
