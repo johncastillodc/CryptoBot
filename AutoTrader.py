@@ -14,6 +14,7 @@ class AutoTrader:
         self.start_btc_price = 0 
         self.end_btc_price = 0
         self.now = datetime.now()
+        
 
     def buy(self):
         prev_bought_at = self.account.bought_btc_at # How much did I buy BTC for before
@@ -29,45 +30,44 @@ class AutoTrader:
         else:
             print(">> Not enough USD left in your account to buy ***"+COIN+ "***")
 
-    def sell(self):
-        self.account.last_transaction_was_sell = True
+    def sell(self):    
         if self.account.btc_balance - self.trade_amount >= 0:
-           # if self.account.btc_price > self.account.bought_btc_at: # Is it profitable?
-            print(">> SELLING $",self.trade_amount," WORTH OF ***"+COIN+ "***")
+            print("\n>> SELLING $",self.trade_amount," WORTH OF ***"+COIN+ "***")
             self.account.btc_amount -= (self.trade_amount / self.account.btc_price)
             self.account.usd_balance += self.trade_amount
+            self.account.last_transaction_was_sell = True
         else:
             print(">> Not enough ***"+COIN+"*** left in your account to buy USD ")
 
     def runSimulation(self,samples):
         
         print("\n\n\n> Starting to run simulation for ...",TESTING_YEARS)
-        print("\n\n >> Training bot with Time Series Model for testing data...")
+        print("\n...Training bot with TIME SERIES Model using testing data...")
         time.sleep(TIMING) 
         
         sample = self.advisor.trainModel(samples)
 
-        print("\n\n >> SHORT strategy based on EMA 18-36 crossover...")
-        
+
+
+        print("\n\n > LONG MARKET TREND strategy based on EMA140 support ...")
+
+        extract_bull = sample[sample['BULL_TREND'].isnull()==False] 
+        print("\n>> Bull Trend dates: \n: "+str(extract_bull))
+        time.sleep(TIMING*2) 
+
+        extract_bear = sample[sample['BEAR_TREND'].isnull()==False] 
+        print("\n>> Bear Trend dates: \n: "+str(extract_bear))
+        time.sleep(TIMING*2) 
+
+        print("\n\n > SHORT MARKET VOLATILITY strategy based on EMA 18-36 crossover...")
+
         extract_curto_compra = sample[sample['Compra_curto'].isnull()==False]
-        print("\n\n>>SHORT Buy dates: \n: "+str(extract_curto_compra))
+        print("\n>> SHORT Buy dates: \n: "+str(extract_curto_compra))
         time.sleep(TIMING*2) 
 
         extract_curto_venda = sample[sample['Venda_curto'].isnull()==False] 
-        print("\n>>SHORT Sell dates: \n: "+str(extract_curto_venda))
+        print("\n>> SHORT Sell dates: \n: "+str(extract_curto_venda))
         time.sleep(TIMING*2) 
-
-        print("\n\n >> LONG TREND strategy based on EMA140 support ...")
-
-        extract_longo_compra = sample[sample['BEAR_TREND'].isnull()==False]
-        print("\n\n>>Bear Trend dates: \n: "+str(extract_longo_compra))
-        time.sleep(TIMING*2) 
-
-        extract_longo_venda = sample[sample['BULL_TREND'].isnull()==False] 
-        print("\n>>Bull Trend dates: \n: "+str(extract_longo_venda))
-        time.sleep(TIMING*2) 
-
-
         
         print("\n\n  *********************************************************************************************")
         print("  *                 Account Balance: $", (self.account.usd_balance + self.account.btc_balance), " BTC: $",
@@ -77,7 +77,6 @@ class AutoTrader:
         day_count = 0
 
         for i in sample.iterrows():
-            #print("The index is: \n"+str(i))
             day_count += 1            
 
             time.sleep(TIMING/12)
@@ -97,25 +96,22 @@ class AutoTrader:
 
             if (i[0] == allyesterday or i[0] == str(TESTING_YEARS)+"-12-31"):
                 self.end_btc_price = i[1].price
-
-            
-            
-            short_prediction = self.advisor.predict_short(i[1].Compra_curto, i[1].Venda_curto)
-            #print(str(i[0]) +" - "+short_prediction)
-                        
+                  
+            short_prediction = self.advisor.predict_short(i[1].Compra_curto, i[1].Venda_curto)           
             long_prediction = self.advisor.predict_long(i[1].BEAR_TREND, i[1].BULL_TREND)
 
             if (long_prediction == "Bull Trend" and  short_prediction == 'BUY' ) or (long_prediction == "Bull Trend" and  short_prediction == 'SELL' ) or (long_prediction == "Bear Trend" and  short_prediction == 'SELL' ):
                 print("\n\n##########################################   DAY ",day_count,"   #########################################")
                 print("\n"+str(i[0]) +" - "+long_prediction)
                 print(str(i[0]) +" - "+short_prediction)
-                print("The Price is: "+str(i[1].price))
+                print("The ***"+COIN+ "*** Price is: "+str(i[1].price))
                 time.sleep(TIMING)
             else:
                 sys.stdout.write('.')
 
             if self.account.btc_price != 0:
                 self.account.btc_balance = self.account.btc_amount * btc_price
+            
             self.account.btc_price = btc_price
 
             if (long_prediction == "Bull Trend"):
@@ -128,7 +124,6 @@ class AutoTrader:
                 self.sell()
 
             self.account.btc_balance = self.account.btc_amount * btc_price
-            #time.sleep(TIMING/12)  # Only for Visual Purposes
         
             if (long_prediction != 'HODL' and short_prediction != 'HODL'):
                 print("\n    ********************************************************************************************   ")
@@ -142,7 +137,7 @@ class AutoTrader:
         print("\n*****************************************   TOTAL   *********************************************")
         print("#           Account Balance: $", (self.account.usd_balance + self.account.btc_balance), " BTC: $",
               self.account.btc_balance, " USD: $", self.account.usd_balance, "")
-        print("\n        =======================        PROFIT: "+str(round(profit,2 ))+"%      =========================\n")
+        print("\n        =======================    BOT PROFIT: "+str(round(profit,2 ))+"%      =========================\n")
         print("\n        =======================   HOLD PROFIT: "+str(round(holdprofit,2 ))+"%      =========================\n")
 
         print("*************************************************************************************************")

@@ -23,12 +23,12 @@ class Model:
 
     
     def crossover_longo(self,df_ema):
-        distance = ( ( df_ema['price'] - df_ema['EMA_140'] )/df_ema['price'] )* 100
+        distance = ( ( df_ema['price'] - df_ema['EMA_200'] )/df_ema['price'] )* 100
 
-        df_ema.loc[distance >= BEAR_TREND_LIMIT , 'Bull_longo'] = distance
-        df_ema.loc[distance < BEAR_TREND_LIMIT, 'Bear_longo'] = distance
+        df_ema.loc[distance >= BEAR_TREND_LIMIT , 'BULL_TREND'] = distance
+        df_ema.loc[distance < BEAR_TREND_LIMIT, 'BEAR_TREND'] = distance
 
-        columns = ['date', 'price', 'EMA_140', 'Bull_longo', 'Bear_longo']
+        columns = ['date', 'price', 'EMA_200', 'BULL_TREND', 'BEAR_TREND']
 
         return df_ema[columns]
 
@@ -43,23 +43,27 @@ class Model:
         output_df_longo = self.crossover_longo(df_ema_longo)
         output_df_longo.set_index('date', inplace=True)
 
-        df_ema_curto['EMA_140'] = df_ema_longo['EMA_140']
+        df_ema_curto['EMA_200'] = df_ema_longo['EMA_200']
         return output_df_curto,output_df_longo
     
     def trainModel(self,ds):   
         indices = Indices(df=ds)
-        df_curto = indices.get_exponential_moving_average(periods=[18,36])
-        df_curto = self.crossover_curto(df_curto)
-        df_curto.set_index('date', inplace=True)
-        # print("TrainModel - df: "+str(df.head()))
+
         df_longo = indices.get_exponential_moving_average(periods=[140,200])
         df_longo = self.crossover_longo(df_longo)
         df_longo.set_index('date', inplace=True)
+        #print("TrainModel - df_longo: \n"+str(df_longo.head()))
 
-        df_curto['EMA_140'] = df_longo['EMA_140']
-        df_curto['BEAR_TREND'] = df_longo['Bear_longo']
-        df_curto['BULL_TREND'] = df_longo['Bull_longo']
-        dfmerged = df_curto
+        df_curto = indices.get_exponential_moving_average(periods=[18,36])
+        df_curto = self.crossover_curto(df_curto)
+        df_curto.set_index('date', inplace=True)
+        #print("TrainModel - df_curto: \n"+str(df_curto.head()))
+
+        df_longo['EMA_18'] = df_curto['EMA_18']
+        df_longo['EMA_36'] = df_curto['EMA_36']
+        df_longo['Compra_curto'] = df_curto['Compra_curto']
+        df_longo['Venda_curto'] = df_curto['Venda_curto']
+        dfmerged = df_longo
         return dfmerged
 
     def predict_short(self,curto_compra, curto_vende):
