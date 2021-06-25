@@ -10,7 +10,7 @@ class AutoTrader:
     def __init__(self,model):
         self.advisor = model
         self.account = VirtualAccount()
-        self.trade_amount = 1000
+        self.trade_amount = 1000 ## for 2016
         self.start_btc_price = 0 
         self.end_btc_price = 0
         self.now = datetime.now()
@@ -47,6 +47,27 @@ class AutoTrader:
         
         sample = self.advisor.trainModel(samples)
 
+        if COIN == "bitcoin":
+            if TESTING_YEARS == 2013:
+                self.account.btc_balance= 144
+            if TESTING_YEARS == 2014:
+                self.account.btc_balance = 771
+            if TESTING_YEARS == 2015:
+                self.account.btc_balance= 314
+            if TESTING_YEARS == 2016:
+                self.account.btc_balance = 434
+            if TESTING_YEARS == 2017:
+                self.account.btc_balance = 998
+            if TESTING_YEARS == 2018:
+                self.account.btc_balance = 13657
+            if TESTING_YEARS == 2019:
+                self.account.btc_balance= 3843
+            if TESTING_YEARS == 2020:
+                self.account.btc_balance = 7200
+            if TESTING_YEARS == 2021:
+                self.account.btc_balance = 29374
+        self.trade_amount = self.account.btc_balance
+        self.initial_balance = self.account.btc_balance
 
 
         print("\n\n > LONG MARKET TREND strategy based on EMA140 support ...")
@@ -75,6 +96,8 @@ class AutoTrader:
         print("  *********************************************************************************************")
 
         day_count = 0
+
+      
 
         for i in sample.iterrows():
             day_count += 1            
@@ -121,6 +144,7 @@ class AutoTrader:
                     self.sell()
             
             if (long_prediction == "Bear Trend" and self.account.last_transaction_was_sell == False):
+                self.trade_amount = self.account.btc_balance
                 self.sell()
 
             self.account.btc_balance = self.account.btc_amount * btc_price
@@ -131,7 +155,7 @@ class AutoTrader:
               self.account.btc_balance, " USD: $", self.account.usd_balance, "")
                 print("#################################################################################################\n\n")  
 
-        profit = ((self.account.usd_balance + self.account.btc_balance - 1000) / (1000) ) *100
+        profit = ((self.account.usd_balance + self.account.btc_balance - self.initial_balance) / (self.initial_balance) ) *100
         holdprofit = ((self.end_btc_price - self.start_btc_price)/self.start_btc_price) *100
 
         print("\n*****************************************   TOTAL   *********************************************")

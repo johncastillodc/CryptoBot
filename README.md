@@ -10,12 +10,11 @@ Comandos:
 ## Como Executar:
 1. Editar a configuraçoes
         COIN = "bitcoin"
-        TESTING_YEARS = 2021  ## Testing sample
-        LONG_SELL_CPT = 70   ## Distance Porcentage over EMA200 to price
-        LONG_BUY_CPT = 20    ## Negative Distance Porcentage below EMA200 to price
-        TIMING = 3           # Seconds delay for visualization purposes
+        TESTING_YEARS = 2021  ## Testing sample. Remember to edit the BTC price for USD 1000 during first date of the year
+        BEAR_TREND_LIMIT = 0  ## Porcentage of EMA140 offset
+        TIMING = 3            ## Seconds delay for visualization purposes
     
-    Some COIN samples are:
+    Some COIN samples used are:
 	- bitcoin
     - ethereum
     - cardano
