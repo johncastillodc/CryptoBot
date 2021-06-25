@@ -6,7 +6,7 @@ import time
 
 if __name__ == '__main__':
 
-    print("\n> Welcome to HODL Crypto-Investing AI\n\n")
+    print("\n> Welcome to the Swing Holder CryptoBot\n\n")
   
     history = MarketHistory()
     df_history = history.get_history(COIN, "2013-01-01","2022-01-01")  
