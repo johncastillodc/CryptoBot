@@ -30,12 +30,12 @@ class AutoTrader:
             print(">> Not enough USD left in your account to buy ***"+COIN+ "***")
 
     def sell(self):
+        self.account.last_transaction_was_sell = True
         if self.account.btc_balance - self.trade_amount >= 0:
            # if self.account.btc_price > self.account.bought_btc_at: # Is it profitable?
             print(">> SELLING $",self.trade_amount," WORTH OF ***"+COIN+ "***")
             self.account.btc_amount -= (self.trade_amount / self.account.btc_price)
             self.account.usd_balance += self.trade_amount
-            self.account.last_transaction_was_sell = True
         else:
             print(">> Not enough ***"+COIN+"*** left in your account to buy USD ")
 
@@ -60,11 +60,11 @@ class AutoTrader:
         print("\n\n >> LONG TREND strategy based on EMA140 support ...")
 
         extract_longo_compra = sample[sample['BEAR_TREND'].isnull()==False]
-        print("\n\n>>LONG Buy dates: \n: "+str(extract_longo_compra))
+        print("\n\n>>Bear Trend dates: \n: "+str(extract_longo_compra))
         time.sleep(TIMING*2) 
 
         extract_longo_venda = sample[sample['BULL_TREND'].isnull()==False] 
-        print("\n>>LONG Sell dates: \n: "+str(extract_longo_venda))
+        print("\n>>Bull Trend dates: \n: "+str(extract_longo_venda))
         time.sleep(TIMING*2) 
 
 
@@ -124,14 +124,14 @@ class AutoTrader:
                 if short_prediction == 'SELL':
                     self.sell()
             
-            if (long_prediction == "Bear Trend"):
+            if (long_prediction == "Bear Trend" and self.account.last_transaction_was_sell == False):
                 self.sell()
 
             self.account.btc_balance = self.account.btc_amount * btc_price
             #time.sleep(TIMING/12)  # Only for Visual Purposes
         
             if (long_prediction != 'HODL' and short_prediction != 'HODL'):
-                print("    ********************************************************************************************   ")
+                print("\n    ********************************************************************************************   ")
                 print("#           Account Balance: $", (self.account.usd_balance + self.account.btc_balance), " BTC: $",
               self.account.btc_balance, " USD: $", self.account.usd_balance, "")
                 print("#################################################################################################\n\n")  
