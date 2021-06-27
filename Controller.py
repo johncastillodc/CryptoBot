@@ -17,12 +17,8 @@ if __name__ == '__main__':
     train_data = train_data.iloc[::-1].reset_index()
     time.sleep(TIMING) 
 
-    print("> Creating TESTING Data for ***"+ COIN + "***"+ " from " +str(TESTING_YEARS-1)+"-12-31 to "+str(TESTING_YEARS)+"-12-31\n")
-    test_data  =  history.get_price(COIN, str(TESTING_YEARS-1)+"-12-31",str(TESTING_YEARS)+"-12-31") 
-    test_data = test_data.iloc[::-1].reset_index()
-    time.sleep(TIMING) 
 
     test_model = Model("AutoTraderAI", train_data)
     auto_trader = AutoTrader(test_model)
     time.sleep(TIMING+TIMING) 
-    auto_trader.runSimulation(test_data)
+    auto_trader.runSimulation(TESTING_YEARS)
