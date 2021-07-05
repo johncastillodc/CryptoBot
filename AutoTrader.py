@@ -100,7 +100,11 @@ class AutoTrader:
                 self.start_btc_price = i[1].price
 
             today = int(self.now.strftime("%d"))
-            yesterday = str(today -1)
+            if today<10:
+                yesterday = "0"+str(today -1)
+            else:
+                yesterday = str(today -1)
+
 
             dating = self.now.strftime("%Y-%m-")
             allyesterday = dating+yesterday

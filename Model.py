@@ -68,7 +68,7 @@ class Model:
         ax.scatter(data.index, data['BEAR_TREND'], label='BEAR_TREND', marker='v', color='red')
         plt.gcf().autofmt_xdate()
         ax.legend()
-        ax.set_title("Estrategia de Medias Moveis - %.i" %ano) 
+        ax.set_title("Moeda: "+COIN +"- Estratégia de Médias Moveis - %.i" %ano) 
         ax.set_xlabel('Data')
         ax.set_ylabel('Price')
         plt.show()
@@ -93,7 +93,7 @@ class Model:
         print("\n>> Bear Trend dates: \n: "+str(extract_bear))
         time.sleep(TIMING*2) 
 
-        print("\n\n > SHORT MARKET VOLATILITY strategy based on EMA 18-36 crossover...")
+        print("\n\n > SHORT MARKET VOLATILITY strategy based on "+EMASHORTLOW+" and "+EMASHORTHIGH+" crossover...")
 
         extract_curto_compra = extracttesting[extracttesting['Compra_curto'].isnull()==False]
         print("\n>> SHORT Buy dates: \n: "+str(extract_curto_compra))

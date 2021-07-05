@@ -32,9 +32,6 @@ Comandos:
 ## Objetivo: 
 Robô de investimentos de longo prazo no mercado de ativos digitais
 
-## Delineamento da pesquisa:
-Usar o histórico de vendas para construir o modelo.
-
 ## População-alvo: 
 Ativos com maior histórico e Capitalização do mercado preferivelmente Bitcoin por ser o ativo principal e unico pareado com dollar
 
@@ -64,7 +61,7 @@ Traders often use several different EMA lengths, such as 10-day, 50-day, and 200
 	- Captura dos dados usando a API coinbase para o ativo BTC (bitcoin)
 	- Escolha e ajuste do modelo de series temporais
 3.	Prescritiva
-	- Análise de medias moveis exponenciais comparando a media de 18 com a media de 36 e achando os cruzamentos
+	- Análise de medias moveis exponenciais comparando a media de 9 com a media de 21 e achando os cruzamentos
     Similar à tecnica usada em açoes: https://www.youtube.com/watch?v=rrVgT6Q8CMM&ab_channel=DiogoMuryDiogoMury 
     Baseado na tecnica de Criptomoedas: https://www.youtube.com/watch?v=VpUEtF4NuZw&ab_channel=EdwardOrnelas
 	- Análise de medo e ambição utilizando a API de Fear And Greed
