@@ -1,7 +1,7 @@
 COIN = "bitcoin"
 TESTING_YEARS = 2021    ## Testing sample. One year from 2013 to 2021
 BEAR_TREND_LIMIT = 0    ## Porcentage of EMA140 offset. Recommended zero
-TIMING = 3              ## Seconds delay for visualization purposes
+TIMING = 0.003              ## Seconds delay for visualization purposes
 EMALONG = 'EMA_200'     ## EMA_140 or EMA_200
 EMASHORTLOW = 'EMA_9'   ## EMA_9 or EMA_18 
 EMASHORTHIGH = 'EMA_21' ## EMA_21 or EMA_36

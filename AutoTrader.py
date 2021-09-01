@@ -3,6 +3,7 @@ from Config import *
 import time
 import sys
 from datetime import datetime
+import dateutil.relativedelta
 
 
 class AutoTrader:
@@ -105,9 +106,12 @@ class AutoTrader:
             else:
                 yesterday = str(today -1)
 
-
             dating = self.now.strftime("%Y-%m-")
             allyesterday = dating+yesterday
+
+            if today==1:
+                lastMonth = self.now + dateutil.relativedelta.relativedelta(months=-1)
+                allyesterday = lastMonth.strftime("%Y-%m-")+'31'
 
             if (i[0] == allyesterday or i[0] == str(TESTING_YEARS)+"-12-31"):
                 self.end_btc_price = i[1].price
