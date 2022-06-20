@@ -13,7 +13,7 @@ if __name__ == '__main__':
     df_history= df_history.iloc[::-1].reset_index()
     
     print("> Creating TRAINING Data for ***"+ COIN + "***"+ " from 2013-04-28 to 2022-01-01\n")
-    train_data  =  history.get_price(COIN, "2013-04-28","2022-01-01") 
+    train_data  =  history.get_price(COIN, "2013-04-28","2023-01-01") 
     train_data = train_data.iloc[::-1].reset_index()
     time.sleep(TIMING) 
 
