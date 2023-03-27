@@ -77,6 +77,8 @@ class AutoTrader:
                 self.account.btc_balance = 29374
             if TESTING_YEARS == 2022:
                 self.account.btc_balance = 46195
+            if TESTING_YEARS == 2023:
+                self.account.btc_balance = 16625
         self.trade_amount = self.account.btc_balance
         self.initial_balance = self.account.btc_balance
 

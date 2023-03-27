@@ -27,3 +27,5 @@ class VirtualAccount:
  ##         self.account.btc_balance = 7200
  ##     if TESTING_YEARS == 2021:
  ##         self.account.btc_balance = 29374
+ ##     if TESTING_YEARS == 2023:
+ ##         self.account.btc_balance = 16625
